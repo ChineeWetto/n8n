@@ -1,6 +1,18 @@
 ARG NODE_VERSION=20
 FROM n8nio/base:${NODE_VERSION}
 
+# Switch to root so we can install packages
+USER root
+
+# Update package lists and install FFmpeg
+RUN apt-get update && \
+    apt-get install -y ffmpeg && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Switch back to the n8n user (or whichever non-root user is used)
+USER node
+
 ARG N8N_VERSION
 RUN if [ -z "$N8N_VERSION" ] ; then echo "The N8N_VERSION argument is missing!" ; exit 1; fi
 
